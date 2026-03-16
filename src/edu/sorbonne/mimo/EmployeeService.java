@@ -19,8 +19,18 @@ public class EmployeeService {
             List<EmployeeCSV> employees = new ArrayList<>();
             for (String line : lines) {
                 String[] parts = line.split(",");
+                if(parts.length == 0) {
+                    continue;
+                }
                 String id = parts[0];
-                String postalCode = parts[1];
+
+                String postalCode;
+                if(parts.length == 1) {
+                    postalCode = "9999";
+                } else {
+                    postalCode = parts[1];
+                }
+
                 EmployeeCSV employee = new EmployeeCSV(id, postalCode);
                 employees.add(employee);
             }
