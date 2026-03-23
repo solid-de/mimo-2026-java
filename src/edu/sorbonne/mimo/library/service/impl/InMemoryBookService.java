@@ -22,9 +22,9 @@ public class InMemoryBookService implements BookService {
         Book sixthBook   = new Book("9782070360024", "L'Étranger", "Albert Camus", BookCategory.NonFiction);
         Book seventhBook = new Book("9782221002247", "Dune", "Frank Herbert", BookCategory.SciFi);
         Book eighthBook  = new Book("9782253006329", "Une étude en rouge", "Arthur Conan Doyle", BookCategory.Fiction);
-        Book ninethBook   = new Book("9780857197689", "Atomic Habits", "James Clear", BookCategory.NonFiction);
-        Book tenthBook    = new Book("9782266154116", "Le Seigneur des Anneaux", "J.R.R. Tolkien", BookCategory.Fiction);
-        Book eleventhBook = new Book("9782844140586", "Persépolis", "Marjane Satrapi", BookCategory.Fiction);
+        Book ninethBook  = new Book("9780857197689", "Atomic Habits", "James Clear", BookCategory.NonFiction);
+        Book tenthBook   = new Book("9782266154116", "Le Seigneur des Anneaux", "J.R.R. Tolkien", BookCategory.Fiction);
+        Book eleventhBook= new Book("9782844140586", "Persépolis", "Marjane Satrapi", BookCategory.Fiction);
         Book twelfthBook = new Book("9782081238626", "Une brève histoire du temps", "Stephen Hawking", BookCategory.Science);
 
         booksByIsbn = new HashMap<>();
