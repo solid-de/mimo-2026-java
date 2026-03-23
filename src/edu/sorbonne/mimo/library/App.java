@@ -4,6 +4,8 @@ import edu.sorbonne.mimo.library.model.Book;
 import edu.sorbonne.mimo.library.service.BookService;
 import edu.sorbonne.mimo.library.service.impl.InMemoryBookService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class App {
@@ -13,8 +15,7 @@ public class App {
         BookService bookService = new InMemoryBookService();
         Optional<Book> byIsbn = bookService.findByIsbn("9782070360024");
 
-        byIsbn
-                .map(book -> {
+        byIsbn.map(book -> {
                     String title = book.title();
                     return title.toUpperCase();
                 })
@@ -28,6 +29,8 @@ public class App {
         byIsbn.ifPresent(b -> System.out.println("Livre entier: " + b));
 
         System.out.println("Fin du programme");
+
+
     }
 
 }
