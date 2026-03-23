@@ -29,7 +29,7 @@ public class StreamsIntro {
                 .map(name -> name.toUpperCase())
                 .filter(name -> name.startsWith("A"))
                 .toList();
-        System.out.println(namesUpper);
+        System.out.println(namesUpper);//ceci est un commentaire
 
     }
 }
