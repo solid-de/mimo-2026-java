@@ -2,6 +2,7 @@ package edu.sorbonne.mimo.library;
 
 import edu.sorbonne.mimo.library.model.Book;
 import edu.sorbonne.mimo.library.service.BookService;
+import edu.sorbonne.mimo.library.service.impl.CsvBookService;
 import edu.sorbonne.mimo.library.service.impl.InMemoryBookService;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ public class App {
 
     public static void main(String[] args) {
         System.out.println("Debut du programme");
-        BookService bookService = new InMemoryBookService();
+        BookService bookService = new CsvBookService();
         Optional<Book> byIsbn = bookService.findByIsbn("9782070360024");
 
         byIsbn.map(book -> {

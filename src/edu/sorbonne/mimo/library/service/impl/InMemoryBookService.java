@@ -1,17 +1,9 @@
 package edu.sorbonne.mimo.library.service.impl;
 
-import edu.sorbonne.mimo.library.exceptions.BookByIsbnNotFoundException;
 import edu.sorbonne.mimo.library.model.Book;
 import edu.sorbonne.mimo.library.model.BookCategory;
-import edu.sorbonne.mimo.library.service.BookService;
 
-import java.util.*;
-
-public class InMemoryBookService implements BookService {
-
-
-    private final Map<String, Book> booksByIsbn;
-    private final Map<BookCategory, List<Book>> booksByCategory;
+public class InMemoryBookService extends BaseService {
 
     public InMemoryBookService() {
         Book firstBook   = new Book("9782070429158", "Harry Potter à l'école des sorciers", "J.K. Rowling", BookCategory.Fiction);
@@ -27,9 +19,6 @@ public class InMemoryBookService implements BookService {
         Book eleventhBook= new Book("9782844140586", "Persépolis", "Marjane Satrapi", BookCategory.Fiction);
         Book twelfthBook = new Book("9782081238626", "Une brève histoire du temps", "Stephen Hawking", BookCategory.Science);
 
-        booksByIsbn = new HashMap<>();
-        booksByCategory = new HashMap<>();
-
         addBook(firstBook);
         addBook(secondBook);
         addBook(thirdBook);
@@ -44,35 +33,4 @@ public class InMemoryBookService implements BookService {
         addBook(twelfthBook);
 
     }
-
-    private void addBook(Book book) {
-        booksByIsbn.put(book.isbn(), book);
-        List<Book> categoryBooks = booksByCategory.get(book.bookCategory());
-        if(categoryBooks == null) {
-            categoryBooks = new ArrayList<>();
-            categoryBooks.add(book);
-            booksByCategory.put(book.bookCategory(), categoryBooks);
-        } else {
-            categoryBooks.add(book);
-        }
-    }
-
-    @Override
-    public List<Book> findAll() {
-        return new ArrayList<>(booksByIsbn.values());
-    }
-
-    @Override
-    public Optional<Book> findByIsbn(String isbn) {
-        Book book = booksByIsbn.get(isbn);
-        return Optional.ofNullable(book);
-    }
-
-
-
-    @Override
-    public List<Book> findByCategory(BookCategory category) {
-        return booksByCategory.getOrDefault(category, List.of());
-    }
-
 }

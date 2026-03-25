@@ -9,10 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class CsvBookService implements BookService {
-
-    private final Map<String, Book> booksByIsbn;
-    private final Map<BookCategory, List<Book>> booksByCategory;
+public class CsvBookService extends BaseService {
 
     public CsvBookService() {
         Path path = Paths.get("files/books.csv");
@@ -23,8 +20,6 @@ public class CsvBookService implements BookService {
             System.out.println("Error reading file: " + e.getMessage());
             throw new RuntimeException(e);
         }
-        booksByIsbn = new HashMap<>();
-        booksByCategory = new HashMap<>();
         for (String line : lines) {
             String[] split = line.split(",");
             if(split.length < 4) {
@@ -48,31 +43,5 @@ public class CsvBookService implements BookService {
         }
     }
 
-    private void addBook(Book book) {
-        booksByIsbn.put(book.isbn(), book);
-        List<Book> categoryBooks = booksByCategory.get(book.bookCategory());
-        if(categoryBooks == null) {
-            categoryBooks = new ArrayList<>();
-            categoryBooks.add(book);
-            booksByCategory.put(book.bookCategory(), categoryBooks);
-        } else {
-            categoryBooks.add(book);
-        }
-    }
 
-    @Override
-    public List<Book> findAll() {
-        return new ArrayList<>(booksByIsbn.values());
-    }
-
-    @Override
-    public Optional<Book> findByIsbn(String isbn) {
-        Book book = booksByIsbn.get(isbn);
-        return Optional.ofNullable(book);
-    }
-
-    @Override
-    public List<Book> findByCategory(BookCategory category) {
-        return booksByCategory.getOrDefault(category, List.of());
-    }
 }
