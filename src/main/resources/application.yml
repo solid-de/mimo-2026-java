@@ -4,4 +4,4 @@ spring:
 
 
 books:
-  csv-store: files/books.csv
+  csv-store: /Users/laabidiraissi/work/teachings/mimo/mimo-2026/books.csv

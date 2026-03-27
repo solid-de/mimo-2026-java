@@ -3,6 +3,7 @@ package edu.sorbonne.mimo.library.service.impl;
 
 import edu.sorbonne.mimo.library.entities.Book;
 import edu.sorbonne.mimo.library.entities.BookCategory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
@@ -13,8 +14,9 @@ import java.util.*;
 @Service
 public class CsvBookService extends BaseService {
 
-    public CsvBookService() {
-        Path path = Paths.get("files/books.csv");
+
+    public CsvBookService(@Value("${books.csv-store}") String csvFilePath) {
+        Path path = Paths.get(csvFilePath);
         List<String> lines;
         try {
             lines = Files.readAllLines(path);
