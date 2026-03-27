@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: hello
+
+
+books:
+  csv-store: files/books.csv
