@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-@Service
+//@Service
 public class CsvBookService extends BaseService {
 
 

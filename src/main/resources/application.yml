@@ -1,7 +1,25 @@
 spring:
   application:
     name: hello
+  datasource:
+    url: jdbc:h2:file:/Users/laabidiraissi/work/teachings/mimo/data/2026/countries
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+      id.db_structure_naming_strategy: legacy
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: true
 
+#http://localhost:8080/h2-console
 
 logging:
   level:
