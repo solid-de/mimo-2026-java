@@ -2,6 +2,7 @@ package edu.sorbonne.mimo.library.controller;
 
 import edu.sorbonne.mimo.library.entities.Book;
 import edu.sorbonne.mimo.library.service.BookService;
+import edu.sorbonne.mimo.library.service.impl.CsvBookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class BookController {
@@ -24,7 +24,7 @@ public class BookController {
 
     @GetMapping(value = "/books/{isbn}")
     public ResponseEntity<Book> getBook(@PathVariable String isbn) {
-
+        log.debug("Received request to get Book for ISBN '{}'", isbn);
         Book book = bookService.findByIsbn(isbn)
                 .orElse(null);
         if (book == null) {
@@ -39,8 +39,6 @@ public class BookController {
         log.debug("Creating book {}", book);
         return ResponseEntity.status(HttpStatus.CREATED).body(book);
     }
-
-
 
     @GetMapping(value ="/books")
     public List<Book> getAllBooks() {
