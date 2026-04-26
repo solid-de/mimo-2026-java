@@ -1,8 +1,8 @@
 spring:
   application:
-    name: hello
+    name: Mimo Library
   datasource:
-    url: jdbc:h2:file:/Users/laabidiraissi/work/teachings/mimo/data/2026/countries
+    url: jdbc:h2:file:/Users/laabidiraissi/work/teachings/mimo/data/2026/books
     username: sa
     password: password
     driverClassName: org.h2.Driver
@@ -23,7 +23,7 @@ spring:
 
 logging:
   level:
-    edu.sorbonne: INFO
+    edu.sorbonne: DEBUG
 
 
 books:

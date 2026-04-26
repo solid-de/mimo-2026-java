@@ -16,4 +16,6 @@ public interface BookService {
 
     List<Book> findByCategory(BookCategory category);
 
+    void create(Book book);
+
 }

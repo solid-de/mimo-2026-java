@@ -6,7 +6,7 @@ import edu.sorbonne.mimo.library.service.BookService;
 
 import java.util.*;
 
-public class BaseService implements BookService {
+public abstract class BaseService implements BookService {
 
     private final Map<String, Book> booksByIsbn;
     private final Map<BookCategory, List<Book>> booksByCategory;
@@ -30,6 +30,11 @@ public class BaseService implements BookService {
     @Override
     public List<Book> findByCategory(BookCategory category) {
         return booksByCategory.getOrDefault(category, List.of());
+    }
+
+    @Override
+    public void create(Book book) {
+
     }
 
     protected void addBook(Book book) {
