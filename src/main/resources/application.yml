@@ -25,6 +25,3 @@ logging:
   level:
     edu.sorbonne: DEBUG
 
-
-books:
-  csv-store: /Users/laabidiraissi/work/teachings/mimo/mimo-2026/books.csv
