@@ -12,6 +12,7 @@ import edu.sorbonne.mimo.library.service.BookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -35,8 +36,14 @@ public class DbBookService implements BookService {
     }
 
     @Override
-    public List<Book> findAll() {
-        return bookRepository.findAll().stream()
+    public List<Book> findAll(String authorName) {
+        List<BookEntity> books;
+        if(authorName == null || authorName.isEmpty()) {
+            books = bookRepository.findAll();
+        } else {
+            books = bookRepository.findByAuthor_Name(authorName);
+        }
+        return books.stream()
                 .map(bookEntity -> bookEntity.toRecord())
                 .toList();
     }
@@ -55,7 +62,7 @@ public class DbBookService implements BookService {
                 .toList();
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void create(Book book) {
         AuthorEntity author = authorRepository.findByName(book.author())
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -65,11 +72,18 @@ public class DbBookService implements BookService {
                         "Publisher not found: " + book.publisherName()));
 
         BookEntity bookEntity = BookEntity.fromRecord(book, author, publisher);
-        bookRepository.save(bookEntity);
+        bookRepository.saveAndFlush(bookEntity);
         log.debug("Created new book: {}", bookEntity.toRecord());
 
-        if (book.isbn().endsWith("2758")) {
-            throw new RuntimeException("Book already exists");
+        callPaymentPartner();
+    }
+
+    private void callPaymentPartner() {
+        try {
+            log.debug("Going to sleep");
+            Thread.sleep(120_000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

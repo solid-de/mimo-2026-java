@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface BookService {
 
-    List<Book> findAll();
+    List<Book> findAll(String authorName);
 
     Optional<Book> findByIsbn(String isbn);
 

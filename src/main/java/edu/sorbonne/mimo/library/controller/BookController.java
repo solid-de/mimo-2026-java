@@ -41,7 +41,7 @@ public class BookController {
     }
 
     @GetMapping(value ="/books")
-    public List<Book> getAllBooks() {
-        return bookService.findAll();
+    public List<Book> getAllBooks(@RequestParam(required = false) String authorName) {
+        return bookService.findAll(authorName);
     }
 }

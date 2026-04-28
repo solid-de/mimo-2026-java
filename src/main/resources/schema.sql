@@ -21,7 +21,7 @@ CREATE TABLE books (
                        author_id BIGINT NOT NULL,
                        publisher_id BIGINT NOT NULL,
                        category VARCHAR(50) NOT NULL,
-                       FOREIGN KEY (author_id) REFERENCES authors(id),
+                       FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE cascade,
                        FOREIGN KEY (publisher_id) REFERENCES publishers(id)
 );
 
