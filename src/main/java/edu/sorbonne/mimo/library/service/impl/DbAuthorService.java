@@ -1,7 +1,7 @@
 package edu.sorbonne.mimo.library.service.impl;
 
 import edu.sorbonne.mimo.library.entities.Author;
-import edu.sorbonne.mimo.library.entities.AuthorCreationRequest;
+import edu.sorbonne.mimo.library.entities.AuthorWriteRequest;
 import edu.sorbonne.mimo.library.entities.db.AuthorEntity;
 import edu.sorbonne.mimo.library.repository.AuthorRepository;
 import edu.sorbonne.mimo.library.service.AuthorService;
@@ -25,7 +25,7 @@ public class DbAuthorService implements AuthorService {
 
     @Override
     @Transactional
-    public Author create(AuthorCreationRequest request) {
+    public Author create(AuthorWriteRequest request) {
         AuthorEntity entity = new AuthorEntity(
                 request.name(),
                 request.country(),
@@ -51,7 +51,7 @@ public class DbAuthorService implements AuthorService {
 
     @Override
     @Transactional
-    public Author update(Long id, AuthorCreationRequest request) {
+    public Author update(Long id, AuthorWriteRequest request) {
         AuthorEntity existing = authorRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Author not found: " + id));
         existing.setName(request.name());

@@ -1,7 +1,7 @@
 package edu.sorbonne.mimo.library.controller;
 
 import edu.sorbonne.mimo.library.entities.Author;
-import edu.sorbonne.mimo.library.entities.AuthorCreationRequest;
+import edu.sorbonne.mimo.library.entities.AuthorWriteRequest;
 import edu.sorbonne.mimo.library.service.AuthorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,14 +35,14 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<Author> createAuthor(@RequestBody AuthorCreationRequest request) {
+    public ResponseEntity<Author> createAuthor(@RequestBody AuthorWriteRequest request) {
         Author created = authorService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Author> updateAuthor(@PathVariable Long id,
-                                               @RequestBody AuthorCreationRequest request) {
+                                               @RequestBody AuthorWriteRequest request) {
         try {
             Author updated = authorService.update(id, request);
             return ResponseEntity.ok(updated);
