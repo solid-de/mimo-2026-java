@@ -78,6 +78,39 @@ public class DbBookService implements BookService {
         callPaymentPartner();
     }
 
+    @Override
+    @Transactional
+    public Book update(String isbn, Book updatedBook) {
+        BookEntity existing = bookRepository.findByIsbn(isbn)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found: " + isbn));
+
+        AuthorEntity author = authorRepository.findByName(updatedBook.author())
+                .orElseThrow(() -> new IllegalArgumentException("Author not found: " + updatedBook.author()));
+        PublisherEntity publisher = publisherRepository.findByName(updatedBook.publisherName())
+                .orElseThrow(() -> new IllegalArgumentException("Publisher not found: " + updatedBook.publisherName()));
+
+        existing.setTitle(updatedBook.title());
+        existing.setAuthor(author);
+        existing.setPublisher(publisher);
+        // Category is stored as String (from Enum), we need the raw name
+        existing.setBookCategory(updatedBook.bookCategory() != null ? updatedBook.bookCategory().name() : null);
+
+        bookRepository.saveAndFlush(existing);
+        log.debug("Updated book: {}", existing.toRecord());
+        return existing.toRecord();
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteByIsbn(String isbn) {
+        if (bookRepository.existsById(isbn)) {
+            bookRepository.deleteById(isbn);
+            log.debug("Deleted book with ISBN '{}'", isbn);
+            return true;
+        }
+        return false;
+    }
+
     private void callPaymentPartner() {
         try {
             log.debug("Going to sleep");

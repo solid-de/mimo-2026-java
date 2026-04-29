@@ -44,4 +44,26 @@ public class BookController {
     public List<Book> getAllBooks(@RequestParam(required = false) String authorName) {
         return bookService.findAll(authorName);
     }
+
+    @PutMapping("/books/{isbn}")
+    public ResponseEntity<Book> updateBook(@PathVariable String isbn, @RequestBody Book book) {
+        log.debug("Updating book with ISBN '{}' to {}", isbn, book);
+        try {
+            Book updated = bookService.update(isbn, book);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/books/{isbn}")
+    public ResponseEntity<Void> deleteBook(@PathVariable String isbn) {
+        log.debug("Deleting book with ISBN '{}'", isbn);
+        boolean deleted = bookService.deleteByIsbn(isbn);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
