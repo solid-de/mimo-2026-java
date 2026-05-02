@@ -2,6 +2,7 @@ package edu.sorbonne.mimo.library.controller;
 
 import edu.sorbonne.mimo.library.entities.Author;
 import edu.sorbonne.mimo.library.entities.AuthorWriteRequest;
+import edu.sorbonne.mimo.library.entities.Publisher;
 import edu.sorbonne.mimo.library.service.AuthorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +35,26 @@ public class AuthorController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/publishers")
+    public ResponseEntity<List<Publisher>> getPublishersByAuthorName(@RequestParam("authorName") String authorName) {
+        try {
+            List<Publisher> publishers = authorService.findPublishersByAuthorName(authorName);
+            return ResponseEntity.ok(publishers);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Author> createAuthor(@RequestBody AuthorWriteRequest request) {
-        Author created = authorService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        try {
+            Author created = authorService.create(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (IllegalArgumentException e) {
+            log.error("Author '{}' could not be created: {}", request.name(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .build();
+        }
     }
 
     @PutMapping("/{id}")

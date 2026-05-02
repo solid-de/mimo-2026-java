@@ -12,7 +12,6 @@ import edu.sorbonne.mimo.library.service.BookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -62,7 +61,8 @@ public class DbBookService implements BookService {
                 .toList();
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Override
+    @Transactional
     public void create(Book book) {
         AuthorEntity author = authorRepository.findByName(book.author())
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -74,8 +74,6 @@ public class DbBookService implements BookService {
         BookEntity bookEntity = BookEntity.fromRecord(book, author, publisher);
         bookRepository.saveAndFlush(bookEntity);
         log.debug("Created new book: {}", bookEntity.toRecord());
-
-        callPaymentPartner();
     }
 
     @Override
@@ -109,14 +107,5 @@ public class DbBookService implements BookService {
             return true;
         }
         return false;
-    }
-
-    private void callPaymentPartner() {
-        try {
-            log.debug("Going to sleep");
-            Thread.sleep(120_000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

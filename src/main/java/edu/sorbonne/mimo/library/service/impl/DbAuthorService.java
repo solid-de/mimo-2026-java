@@ -2,8 +2,11 @@ package edu.sorbonne.mimo.library.service.impl;
 
 import edu.sorbonne.mimo.library.entities.Author;
 import edu.sorbonne.mimo.library.entities.AuthorWriteRequest;
+import edu.sorbonne.mimo.library.entities.Publisher;
 import edu.sorbonne.mimo.library.entities.db.AuthorEntity;
 import edu.sorbonne.mimo.library.repository.AuthorRepository;
+import edu.sorbonne.mimo.library.repository.BookRepository;
+import edu.sorbonne.mimo.library.repository.PublisherRepository;
 import edu.sorbonne.mimo.library.service.AuthorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +21,21 @@ public class DbAuthorService implements AuthorService {
 
     private static final Logger log = LoggerFactory.getLogger(DbAuthorService.class);
     private final AuthorRepository authorRepository;
+    private final PublisherRepository publisherRepository;
 
-    public DbAuthorService(AuthorRepository authorRepository) {
+    public DbAuthorService(AuthorRepository authorRepository,
+                           PublisherRepository publisherRepository) {
         this.authorRepository = authorRepository;
+        this.publisherRepository = publisherRepository;
     }
 
     @Override
     @Transactional
     public Author create(AuthorWriteRequest request) {
+        authorRepository.findByName(request.name())
+                .ifPresent(author -> {
+                    throw new IllegalArgumentException("Author already exists");
+                });
         AuthorEntity entity = new AuthorEntity(
                 request.name(),
                 request.country(),
@@ -46,6 +56,14 @@ public class DbAuthorService implements AuthorService {
         return authorRepository.findAll()
                 .stream()
                 .map(DbAuthorService::toRecord)
+                .toList();
+    }
+
+    @Override
+    public List<Publisher> findPublishersByAuthorName(String authorName) {
+        return publisherRepository.findDistinctByAuthorName(authorName)
+                .stream()
+                .map(p -> new Publisher(p.getId(), p.getName(), p.getCountry()))
                 .toList();
     }
 

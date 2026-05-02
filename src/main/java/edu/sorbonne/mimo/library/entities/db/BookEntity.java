@@ -65,7 +65,7 @@ public class BookEntity {
         BookCategory category;
         try {
             category = BookCategory.valueOf(bookCategory);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Invalid category for row: " + this.isbn);
         }
         // Extract author name and publisher name (lazy loaded)
