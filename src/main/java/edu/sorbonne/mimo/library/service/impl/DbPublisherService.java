@@ -2,7 +2,9 @@ package edu.sorbonne.mimo.library.service.impl;
 
 import edu.sorbonne.mimo.library.entities.Publisher;
 import edu.sorbonne.mimo.library.entities.PublisherWriteRequest;
+import edu.sorbonne.mimo.library.entities.db.BookEntity;
 import edu.sorbonne.mimo.library.entities.db.PublisherEntity;
+import edu.sorbonne.mimo.library.repository.BookRepository;
 import edu.sorbonne.mimo.library.repository.PublisherRepository;
 import edu.sorbonne.mimo.library.service.PublisherService;
 import org.slf4j.Logger;
@@ -18,9 +20,12 @@ public class DbPublisherService implements PublisherService {
 
     private static final Logger log = LoggerFactory.getLogger(DbPublisherService.class);
     private final PublisherRepository publisherRepository;
+    private final BookRepository bookRepository;
 
-    public DbPublisherService(PublisherRepository publisherRepository) {
+    public DbPublisherService(PublisherRepository publisherRepository,
+                              BookRepository bookRepository) {
         this.publisherRepository = publisherRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -65,12 +70,20 @@ public class DbPublisherService implements PublisherService {
     @Override
     @Transactional
     public boolean deleteById(Long id) {
-        if (publisherRepository.existsById(id)) {
-            publisherRepository.deleteById(id);
-            log.debug("Deleted publisher: {}", id);
-            return true;
+        Optional<PublisherEntity> fromDb = publisherRepository.findById(id);
+        if(fromDb.isEmpty()) {
+            return false;
         }
-        return false;
+        String publisherName = fromDb.map(db -> db.getName())
+                .orElse("");
+        int publisherBooks = bookRepository.countByPublisher_Name(publisherName);
+        if(publisherBooks > 0) {
+            log.warn("Trying to delete publisher having {} books", publisherBooks);
+            throw new IllegalArgumentException("Can not delete publisher having books in DB");
+        }
+        publisherRepository.deleteById(id);
+        log.debug("Deleted publisher: {}", id);
+        return true;
     }
 
     private static Publisher toRecord(PublisherEntity entity) {

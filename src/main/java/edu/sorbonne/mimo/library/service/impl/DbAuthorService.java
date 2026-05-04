@@ -4,6 +4,7 @@ import edu.sorbonne.mimo.library.entities.Author;
 import edu.sorbonne.mimo.library.entities.AuthorWriteRequest;
 import edu.sorbonne.mimo.library.entities.Publisher;
 import edu.sorbonne.mimo.library.entities.db.AuthorEntity;
+import edu.sorbonne.mimo.library.entities.db.BookEntity;
 import edu.sorbonne.mimo.library.repository.AuthorRepository;
 import edu.sorbonne.mimo.library.repository.BookRepository;
 import edu.sorbonne.mimo.library.repository.PublisherRepository;
@@ -22,11 +23,14 @@ public class DbAuthorService implements AuthorService {
     private static final Logger log = LoggerFactory.getLogger(DbAuthorService.class);
     private final AuthorRepository authorRepository;
     private final PublisherRepository publisherRepository;
+    private final BookRepository bookRepository;
 
     public DbAuthorService(AuthorRepository authorRepository,
-                           PublisherRepository publisherRepository) {
+                           PublisherRepository publisherRepository,
+                           BookRepository bookRepository) {
         this.authorRepository = authorRepository;
         this.publisherRepository = publisherRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -83,12 +87,20 @@ public class DbAuthorService implements AuthorService {
     @Override
     @Transactional
     public boolean deleteById(Long id) {
-        if (authorRepository.existsById(id)) {
-            authorRepository.deleteById(id);
-            log.debug("Deleted author: {}", id);
-            return true;
+        Optional<AuthorEntity> fromDb = authorRepository.findById(id);
+        if (fromDb.isEmpty()) {
+            return false;
         }
-        return false;
+        String authorName = fromDb.map(db -> db.getName())
+                .orElse("");
+        List<BookEntity> authorBooks = bookRepository.findByAuthor_Name(authorName);
+        if(!authorBooks.isEmpty()) {
+            log.warn("Author has existing books, deleting them");
+            bookRepository.deleteAll(authorBooks);
+        }
+        authorRepository.deleteById(id);
+        log.debug("Deleted author: {}", id);
+        return true;
     }
 
     private static Author toRecord(AuthorEntity entity) {

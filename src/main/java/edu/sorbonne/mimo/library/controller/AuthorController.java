@@ -35,8 +35,8 @@ public class AuthorController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/publishers")
-    public ResponseEntity<List<Publisher>> getPublishersByAuthorName(@RequestParam("authorName") String authorName) {
+    @GetMapping("/{authorName}/publishers")
+    public ResponseEntity<List<Publisher>> getPublishersByAuthorName(@PathVariable String authorName) {
         try {
             List<Publisher> publishers = authorService.findPublishersByAuthorName(authorName);
             return ResponseEntity.ok(publishers);

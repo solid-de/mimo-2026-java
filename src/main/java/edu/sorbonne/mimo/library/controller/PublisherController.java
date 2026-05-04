@@ -57,8 +57,13 @@ public class PublisherController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePublisher(@PathVariable Long id) {
-        boolean deleted = publisherService.deleteById(id);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    public ResponseEntity<String> deletePublisher(@PathVariable Long id) {
+        try {
+            boolean deleted = publisherService.deleteById(id);
+            return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .build();
+        }
     }
 }

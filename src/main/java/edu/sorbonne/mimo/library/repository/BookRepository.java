@@ -24,4 +24,6 @@ public interface BookRepository extends JpaRepository<BookEntity, String> {
 
     @EntityGraph(attributePaths = {"author", "publisher"})
     List<BookEntity> findByPublisher_Name(String publisherName);
+
+    int countByPublisher_Name(String publisherName);
 }
