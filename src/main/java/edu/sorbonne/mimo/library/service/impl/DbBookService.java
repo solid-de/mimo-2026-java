@@ -79,6 +79,9 @@ public class DbBookService implements BookService {
     @Override
     @Transactional
     public Book update(String isbn, Book updatedBook) {
+        if(updatedBook.bookCategory() == null) {
+            throw new IllegalArgumentException("Book category is required");
+        }
         BookEntity existing = bookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found: " + isbn));
 
@@ -91,7 +94,7 @@ public class DbBookService implements BookService {
         existing.setAuthor(author);
         existing.setPublisher(publisher);
         // Category is stored as String (from Enum), we need the raw name
-        existing.setBookCategory(updatedBook.bookCategory() != null ? updatedBook.bookCategory().name() : null);
+        existing.setBookCategory(updatedBook.bookCategory().name());
 
         bookRepository.saveAndFlush(existing);
         log.debug("Updated book: {}", existing.toRecord());

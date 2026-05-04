@@ -3,6 +3,7 @@ package edu.sorbonne.mimo.library.service.impl;
 import edu.sorbonne.mimo.library.entities.Publisher;
 import edu.sorbonne.mimo.library.entities.PublisherWriteRequest;
 import edu.sorbonne.mimo.library.entities.db.PublisherEntity;
+import edu.sorbonne.mimo.library.repository.BookRepository;
 import edu.sorbonne.mimo.library.repository.PublisherRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,10 +23,14 @@ class DbPublisherServiceTest {
 
     @Mock
     private PublisherRepository publisherRepository;
+    @Mock
+    private BookRepository bookRepository;
+
     @InjectMocks
     private DbPublisherService publisherService;
 
-    private final PublisherEntity gallimard = new PublisherEntity("Gallimard", "France");
+    private final PublisherEntity gallimard =
+            new PublisherEntity("Gallimard", "France");
 
     // ----------------- create -----------------
 
@@ -98,15 +103,38 @@ class DbPublisherServiceTest {
     // ----------------- delete -----------------
 
     @Test
-    void deleteById_Exists_ReturnsTrue() {
-        when(publisherRepository.existsById(1L)).thenReturn(true);
+    void deleteById_Exists_with_no_books_ReturnsTrue() {
+        PublisherEntity flammarion = new PublisherEntity();
+        flammarion.setId(1L);
+        flammarion.setCountry("France");
+        flammarion.setName("Flammarion");
+        when(publisherRepository.findById(1L))
+                .thenReturn(Optional.of(flammarion));
+        when(bookRepository.countByPublisher_Name("Flammarion"))
+                .thenReturn(0);
         assertTrue(publisherService.deleteById(1L));
         verify(publisherRepository).deleteById(1L);
     }
 
     @Test
+    void deleteById_Exists_with_books_ReturnsFalse() {
+        PublisherEntity flammarion = new PublisherEntity();
+        flammarion.setId(1L);
+        flammarion.setCountry("France");
+        flammarion.setName("Flammarion");
+        when(publisherRepository.findById(1L))
+                .thenReturn(Optional.of(flammarion));
+        when(bookRepository.countByPublisher_Name("Flammarion"))
+                .thenReturn(5);
+
+        assertThrows(IllegalArgumentException.class,
+                        () -> publisherService.deleteById(1L));
+        verify(publisherRepository, never()).deleteById(any());
+    }
+
+    @Test
     void deleteById_NotExists_ReturnsFalse() {
-        when(publisherRepository.existsById(99L)).thenReturn(false);
+        when(publisherRepository.findById(99L)).thenReturn(Optional.empty());
         assertFalse(publisherService.deleteById(99L));
         verify(publisherRepository, never()).deleteById(any());
     }

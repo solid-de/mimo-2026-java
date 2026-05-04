@@ -4,6 +4,7 @@ import edu.sorbonne.mimo.library.entities.Author;
 import edu.sorbonne.mimo.library.entities.AuthorWriteRequest;
 import edu.sorbonne.mimo.library.entities.Publisher;
 import edu.sorbonne.mimo.library.entities.db.AuthorEntity;
+import edu.sorbonne.mimo.library.entities.db.BookEntity;
 import edu.sorbonne.mimo.library.entities.db.PublisherEntity;
 import edu.sorbonne.mimo.library.repository.AuthorRepository;
 import edu.sorbonne.mimo.library.repository.BookRepository;
@@ -27,12 +28,16 @@ class DbAuthorServiceTest {
     @Mock
     private AuthorRepository authorRepository;
     @Mock
+    private BookRepository bookRepository;
+    @Mock
     private PublisherRepository publisherRepository;
     @InjectMocks
     private DbAuthorService authorService;
 
     private final AuthorEntity rowling = new AuthorEntity("J.K. Rowling", "UK", "Bio");
     private final PublisherEntity gallimard = new PublisherEntity("Gallimard", "France");
+    private final BookEntity bookEntity = new BookEntity("9782070429158", "Harry Potter",
+            rowling, gallimard, "Fiction");
 
     // ----------------- create -----------------
 
@@ -104,17 +109,21 @@ class DbAuthorServiceTest {
     // ----------------- delete -----------------
 
     @Test
-    void deleteById_Exists_ReturnsTrue() {
-        when(authorRepository.existsById(1L)).thenReturn(true);
+    void deleteById_Exists_with_books_deletes_books_and_ReturnsTrue() {
+        when(authorRepository.findById(1L)).thenReturn(Optional.of(rowling));
+        when(bookRepository.findByAuthor_Name("J.K. Rowling")).thenReturn(List.of(bookEntity));
+
         assertTrue(authorService.deleteById(1L));
-        verify(authorRepository).deleteById(1L);
+
+        verify(bookRepository).deleteAll(List.of(bookEntity));
     }
 
     @Test
     void deleteById_NotExists_ReturnsFalse() {
-        when(authorRepository.existsById(99L)).thenReturn(false);
+        when(authorRepository.findById(99L)).thenReturn(Optional.empty());
         assertFalse(authorService.deleteById(99L));
         verify(authorRepository, never()).deleteById(any());
+        verify(bookRepository, never()).deleteAll(any());
     }
 
     // ----------------- findPublishersByAuthorName -----------------

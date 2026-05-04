@@ -42,6 +42,13 @@ class DbBookServiceTest {
     // ----------------- findAll -----------------
 
     @Test
+    void findAll_WithNoAuthorName_Returns_NoBooks_If_Repo_Empty() {
+        when(bookRepository.findAll()).thenReturn(List.of());
+        List<Book> books = bookService.findAll(null);
+        assertEquals(0, books.size());
+    }
+
+    @Test
     void findAll_WithNoAuthorName_ReturnsAllBooks() {
         when(bookRepository.findAll()).thenReturn(List.of(bookEntity));
         List<Book> books = bookService.findAll(null);
@@ -78,8 +85,10 @@ class DbBookServiceTest {
 
     @Test
     void findByIsbn_NotFound_ReturnsEmpty() {
-        when(bookRepository.findByIsbn("nonexistent")).thenReturn(Optional.empty());
-        assertTrue(bookService.findByIsbn("nonexistent").isEmpty());
+        when(bookRepository.findByIsbn("nonexistent"))
+                .thenReturn(Optional.empty());
+        Optional<Book> result = bookService.findByIsbn("nonexistent");
+        assertTrue(result.isEmpty());
     }
 
     // ----------------- findByCategory -----------------
@@ -188,18 +197,11 @@ class DbBookServiceTest {
     }
 
     @Test
-    void update_NullCategory_StoresNull() {
+    void update_NullCategory_throws_Exception() {
         // Testing when category is null – should store null as string
         String isbn = "9782070429158";
         Book updatedBook = new Book(isbn, "Title", "J.K. Rowling", "Gallimard", null);
-        when(bookRepository.findByIsbn(isbn)).thenReturn(Optional.of(bookEntity));
-        when(authorRepository.findByName("J.K. Rowling")).thenReturn(Optional.of(author));
-        when(publisherRepository.findByName("Gallimard")).thenReturn(Optional.of(publisher));
-        when(bookRepository.saveAndFlush(any())).thenReturn(bookEntity);
-
-        Book result = bookService.update(isbn, updatedBook);
-        // The returned record will have null category (since category is null)
-        assertNull(result.bookCategory());
+        assertThrows(IllegalArgumentException.class, () -> bookService.update(isbn, updatedBook));
     }
 
     // ---------- deleteByIsbn ----------
